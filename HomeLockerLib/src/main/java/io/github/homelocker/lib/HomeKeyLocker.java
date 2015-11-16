@@ -3,14 +3,15 @@ package io.github.homelocker.lib;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
 import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 
 /**
@@ -58,6 +59,25 @@ public class HomeKeyLocker {
             FrameLayout framelayout = new FrameLayout(getContext());
             framelayout.setBackgroundColor(0);
             setContentView(framelayout);
+        }
+
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            Activity activityLocal = getOwnerActivity();
+
+            InterceptedButtonEventsReceiver receiver = activityLocal instanceof InterceptedButtonEventsReceiver ? ((InterceptedButtonEventsReceiver) activityLocal) : null;
+            if (receiver != null) {
+                if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    receiver.onInterceptedBackPressed();
+                }
+                if(event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
+                    receiver.onInterceptedMenuPressed();
+                }
+            } else {
+                Log.d(HomeKeyLocker.class.getSimpleName(), "Activity should implement " + InterceptedButtonEventsReceiver.class.getSimpleName() + " to be able to catch back and menu events");
+            }
+
+            return super.dispatchKeyEvent(event);
         }
     }
 }

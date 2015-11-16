@@ -2,14 +2,16 @@ package io.github.homelocker.app;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
+import io.github.homelocker.lib.InterceptedButtonEventsReceiver;
 import io.github.homelocker.lib.HomeKeyLocker;
 
-public class MainActivity extends ActionBarActivity implements CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends ActionBarActivity implements CompoundButton.OnCheckedChangeListener, InterceptedButtonEventsReceiver {
 
     private ToggleButton mTbLock;
     private HomeKeyLocker mHomeKeyLocker;
@@ -60,5 +62,15 @@ public class MainActivity extends ActionBarActivity implements CompoundButton.On
         super.onDestroy();
         mHomeKeyLocker.unlock();
         mHomeKeyLocker = null;
+    }
+
+    @Override
+    public void onInterceptedBackPressed() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onInterceptedMenuPressed() {
+        openOptionsMenu();
     }
 }
